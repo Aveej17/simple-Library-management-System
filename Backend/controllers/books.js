@@ -9,12 +9,18 @@ exports.getBooks = async (req, res, next) => {
 
         // Update the fine for each book dynamically
         const updatedBooks = books.map(book => {
-            const currentTime = new Date();
-            const timeDifference = currentTime - book.updatedAt;
+            // Only update the fine if the status is "Issued"
+            if (book.status === 'Issued') {
+                const currentTime = new Date();
+                const timeDifference = currentTime - book.updatedAt;
 
-            // Convert milliseconds to hours
-            const hours = Math.floor(timeDifference / (1000 * 60 * 60));
-            book.currentFine = hours * 10;
+                // Convert milliseconds to hours
+                const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+                book.currentFine = hours * 10;
+
+                // Save the updated fine to the database
+                book.save();
+            }
 
             return book;
         });
