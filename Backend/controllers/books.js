@@ -1,49 +1,37 @@
 const Book = require('../models/book');
 
-try {
-    // Fetch all books from the database
-    const books = await Book.findAll();
+exports.getBooks = async (req, res, next) => {
+    console.log("get Books Called");
 
-    // Update the fine for each book dynamically
-    const updatedBooks = books.map(book => {
-        const currentTime = new Date();
-        const timeDifference = currentTime - book.updatedAt;
+    try {
+        // Fetch all books from the database
+        const books = await Book.findAll();
 
-        // Convert milliseconds to hours
-        const hours = Math.floor(timeDifference / (1000 * 60 * 60));
-        book.currentFine = hours * 10;
+        // Update the fine for each book dynamically
+        const updatedBooks = books.map(book => {
+            const currentTime = new Date();
+            const timeDifference = currentTime - book.updatedAt;
 
-        return book;
-    });
+            // Convert milliseconds to hours
+            const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+            book.currentFine = hours * 10;
 
-    // Save updated fines to the database (if you want to persist the changes)
-    for (let book of updatedBooks) {
-        await book.save();
+            return book;
+        });
+
+        // Save updated fines to the database (if you want to persist the changes)
+        for (let book of updatedBooks) {
+            await book.save();
+        }
+
+        // Send the books data as the response
+        res.send(updatedBooks);
+    } catch (error) {
+        // Handle any errors that occur during the database query
+        console.error("Error fetching books:", error);
+        res.status(500).send({ message: "Failed to fetch books" });
     }
-
-    // Send the books data as the response
-    res.send(updatedBooks);
-} catch (error) {
-    // Handle any errors that occur during the database query
-    console.error("Error fetching books:", error);
-    res.status(500).send({ message: "Failed to fetch books" });
-}
-
-// exports.getBooks = async (req, res, next)=>{
-//     console.log("get Books Called");
-
-//     try {
-//         // Fetch all books from the database
-//         const books = await Book.findAll();
-        
-//         // Send the books data as the response
-//         res.send(books);
-//     } catch (error) {
-//         // Handle any errors that occur during the database query
-//         console.error("Error fetching books:", error);
-//         res.status(500).send({ message: "Failed to fetch books" });
-//     }   
-// }
+};
 
 exports.createBook = async (req, res, next)=>{
     try {
