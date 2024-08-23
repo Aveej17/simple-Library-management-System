@@ -1,7 +1,7 @@
 const Book = require('../models/book');
 
 exports.getBooks = async (req, res, next) => {
-    console.log("get Books Called");
+    // console.log("get Books Called");
 
     try {
         // Fetch all books from the database
